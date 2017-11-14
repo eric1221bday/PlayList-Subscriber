@@ -2,16 +2,19 @@ import json
 import os
 import pprint
 import json
+import argparse
 from PlayListManager import PlayListManager
 
 from googleapiclient.discovery import build
 
-DEVELOPER_KEY = "AIzaSyAzdmVlblOrpZm7pWMK63fcy-_J96haOYw"
-API_SERVICE_NAME = 'youtube'
-API_VERSION = 'v3'
+DEVELOPER_KEY = "YOUR KEY"
+API_SERVICE_NAME = "youtube"
+API_VERSION = "v3"
 
-if __name__ == '__main__':
-    youtube = build(API_SERVICE_NAME, API_VERSION, developerKey=DEVELOPER_KEY)
-    manager = PlayListManager(youtube)
-    manager.add_playlist("PLVmM0UVcquYI-O-SKrE4n4FZBrzBV-Ir7")
-
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Options for the playlist subscriber")
+    parser.add_argument("key", type=str)
+    args = parser.parse_args()
+    youtube = build(API_SERVICE_NAME, API_VERSION, developerKey=args.key)
+    with PlayListManager(youtube) as manager:
+        manager.add_playlist("PLVmM0UVcquYI-O-SKrE4n4FZBrzBV-Ir7")
