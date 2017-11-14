@@ -18,3 +18,4 @@ if __name__ == "__main__":
     youtube = build(API_SERVICE_NAME, API_VERSION, developerKey=args.key)
     with PlayListManager(youtube) as manager:
         manager.add_playlist("PLVmM0UVcquYI-O-SKrE4n4FZBrzBV-Ir7")
+        manager.check_new()

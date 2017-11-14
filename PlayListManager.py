@@ -3,6 +3,7 @@ import warnings
 import json
 from pathlib import Path
 from datetime import datetime
+import dateutil.parser
 
 class PlayListManager:
     playlists: dict
@@ -26,14 +27,14 @@ class PlayListManager:
         fp.close()
         return
 
-    def access_playlist(self, id: str):
+    def access_playlist(self, serial: str):
         response = self.youtube.playlistItems().list(
             part="contentDetails,snippet",
             maxResults=50,
-            playlistId=id
+            playlistId=serial
         ).execute()
 
-        self.playlists[id]["length"] = int(response["pageInfo"]["totalResults"])
+        self.playlists[serial]["length"] = int(response["pageInfo"]["totalResults"])
         videos: list = response["items"]
 
         if "nextPageToken" in response:
@@ -45,23 +46,27 @@ class PlayListManager:
                     pageToken=response["nextPageToken"]
                 ).execute()
                 videos.extend(response["items"])
-        times = [datetime.strptime(video["contentDetails"]["videoPublishedAt"], '%Y-%m-%dT%H:%M:%S.000Z')
+
+        times = [dateutil.parser.parse(video["contentDetails"]["videoPublishedAt"])
                  for video in videos
                  if "videoPublishedAt" in video["contentDetails"]]
-        self.playlists[id]["most_recent"] = max(times).isoformat()
+        print(max(times).astimezone())
+        self.playlists[serial]["most_recent"] = max(times).isoformat()
         return videos
 
-    def add_playlist(self, id: str):
-        if id not in self.playlists:
-            self.playlists[id] = {}
-            self.playlists[id]["unwatched"] = []
+    def add_playlist(self, serial: str):
+        if serial not in self.playlists:
+            self.playlists[serial] = {}
+            self.playlists[serial]["unwatched"] = []
         else:
             warnings.warn("playlist already in system!")
             return
-        self.access_playlist(id)
+        self.access_playlist(serial)
         # pprint.pprint(max(times).isoformat())
 
     def check_new(self):
         for key, value in self.playlists.items():
+            old_recent = dateutil.parser.parse(self.playlists[key]["most_recent"])
+            # pprint.pprint(old_recent)
             videos = self.access_playlist(key)
 
