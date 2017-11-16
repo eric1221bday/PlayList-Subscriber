@@ -1,0 +1,3 @@
+[submodule "deps/rumps"]
+	path = deps/rumps
+	url = https://github.com/eric1221bday/rumps.git

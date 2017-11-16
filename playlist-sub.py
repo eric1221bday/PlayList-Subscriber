@@ -1,7 +1,3 @@
-import json
-import os
-import pprint
-import json
 import argparse
 from PlayListManager import PlayListManager
 
@@ -16,6 +12,5 @@ if __name__ == "__main__":
     parser.add_argument("key", type=str)
     args = parser.parse_args()
     youtube = build(API_SERVICE_NAME, API_VERSION, developerKey=args.key)
-    with PlayListManager(youtube) as manager:
-        # manager.add_playlist("PLVmM0UVcquYI-O-SKrE4n4FZBrzBV-Ir7")
-        manager.run()
+    manager = PlayListManager(youtube)
+    manager.run()
